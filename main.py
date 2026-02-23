@@ -6,9 +6,15 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
 import joblib, json, numpy as np, pandas as pd
 
-MODEL_PATH    = "./models/stockout_model.joblib"
-SCALER_PATH   = "./models/stockout_scaler.joblib"
-METADATA_PATH = "./models/stockout_metadata.json"
+import os
+
+BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH    = os.path.join(BASE_DIR, "models", "stockout_model.joblib")
+SCALER_PATH   = os.path.join(BASE_DIR, "models", "stockout_scaler.joblib")
+METADATA_PATH = os.path.join(BASE_DIR, "models", "stockout_metadata.json")
+
+print(f"Looking for model at: {MODEL_PATH}")
+print(f"File exists: {os.path.exists(MODEL_PATH)}")
 
 FEATURE_COLUMNS = [
     "Quantity_Current", "Weekly_Avg", "Monthly_Avg_This_Month",

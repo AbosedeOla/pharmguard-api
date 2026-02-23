@@ -108,6 +108,41 @@ def batch_predict(requests: List[StockRequest]):
 def root():
     return {"name": "PharmGuard API", "version": "2.0.0", "docs": "/docs"}
 
+@app.post("/predict-expiry")
+def predict_expiry(req: StockRequest):
+    """Predict expiry risk for a medicine"""
+    
+def expiry_alert(days):
+    if days <= 0:    return "EXPIRED",   "🔴 This batch has already expired"
+    elif days <= 30: return "CRITICAL",  "🔴 Expires within 30 days"
+    elif days <= 60: return "WARNING",   "🟠 Expires within 60 days"
+    elif days <= 90: return "CAUTION",   "🟡 Expires within 90 days"
+    else:            return "OK",        "🟢 Expiry date is safe"
+
+    days = req.days_until_expiry
+    level, desc = expiry_alert(days)
+
+    # Estimate units that will expire before being sold
+    daily = req.weekly_avg / 7 if req.weekly_avg > 0 else 0.1
+    units_at_risk = max(0, round(req.quantity_current - (daily * days), 1))
+
+    return {
+        "medicine_name":     req.medicine_name,
+        "medicine_id":       req.medicine_id,
+        "days_until_expiry": days,
+        "alert_level":       level,
+        "alert_description": desc,
+        "units_at_risk":     units_at_risk,
+        "recommendation":    (
+            "Remove from shelf immediately." if level == "EXPIRED" else
+            "Prioritise dispensing — sell before expiry." if level == "CRITICAL" else
+            "Monitor closely and consider promotions." if level == "WARNING" else
+            "Flag for next stock review." if level == "CAUTION" else
+            "No action needed."
+        )
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, workers=2, reload=False)

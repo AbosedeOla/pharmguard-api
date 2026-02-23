@@ -1,0 +1,24 @@
+{
+  "model_type": "Gradient Boosting",
+  "features": [
+    "Quantity_Current",
+    "Weekly_Avg",
+    "Monthly_Avg_This_Month",
+    "Lead_Time_Days",
+    "Days_Until_Expiry",
+    "Batch_Count",
+    "Cost_Per_Unit"
+  ],
+  "target": "Days_Until_Stockout",
+  "training_records": 1164,
+  "test_records": 291,
+  "metrics": {
+    "train_mae": 0.1798,
+    "test_mae": 0.2226,
+    "train_r2": 0.9999,
+    "test_r2": 0.9999,
+    "rmse": 0.298
+  },
+  "trained_at": "2026-02-16T05:42:08.775000",
+  "schema_version": "2.0"
+}
